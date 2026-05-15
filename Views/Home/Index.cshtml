@@ -1,0 +1,159 @@
+@model IEnumerable<FashionShop.Models.Product>
+
+@{
+    ViewData["Title"] = "Fashion Shop";
+}
+
+<div class="hero-section bg-primary text-white text-center py-5 mb-4">
+    <div class="container">
+        <h1 class="display-4">Welcome to Fashion Shop</h1>
+        <p class="lead">Discover the latest trends in fashion</p>
+        @if (User.Identity?.IsAuthenticated != true)
+        {
+            <a href="/Account/Register" class="btn btn-light btn-lg">Register Now</a>
+        }
+    </div>
+</div>
+
+<div class="container">
+    <!-- Featured Products -->
+    <section class="mb-5">
+        <h2 class="mb-4">Featured Products</h2>
+        <div class="row">
+            @if (!Model.Any())
+            {
+                <div class="col-12">
+                    <div class="alert alert-info">
+                        <h4>No products available</h4>
+                        <p>Check back later for new arrivals!</p>
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <a href="/Products/Create" class="btn btn-primary">Add Product</a>
+                        }
+                    </div>
+                </div>
+            }
+            else
+            {
+                @foreach (var product in Model.Take(4))
+                {
+                    <div class="col-md-3 col-sm-6 mb-4">
+                        <div class="card h-100">
+                            @if (!string.IsNullOrEmpty(product.ImageUrl))
+                            {
+                                <img src="@product.ImageUrl" class="card-img-top" alt="@product.Name" style="height: 200px; object-fit: cover;">
+                            }
+                            else
+                            {
+                                <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                                    <span class="text-muted">No Image</span>
+                                </div>
+                            }
+                            <div class="card-body">
+                                <h5 class="card-title">@product.Name</h5>
+                                <p class="card-text text-muted">@product.Category.Name</p>
+                                <h5 class="text-primary">@product.Price.ToString("C")</h5>
+                            </div>
+                            <div class="card-footer">
+                                <div class="d-flex gap-2">
+                                    <a href="/Products/Details/@product.Id" class="btn btn-primary btn-sm flex-fill">View Details</a>
+                                    @if (User.Identity?.IsAuthenticated == true)
+                                    {
+                                        <form asp-action="Add" asp-controller="Cart" method="post" style="display: inline;">
+                                            <input type="hidden" name="productId" value="@product.Id" />
+                                            <input type="hidden" name="quantity" value="1" />
+                                            <button type="submit" class="btn btn-success btn-sm">Add to Cart</button>
+                                        </form>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+        <div class="text-center mt-4">
+            <a href="/Products" class="btn btn-outline-primary">View All Products</a>
+        </div>
+    </section>
+
+    <!-- Categories -->
+    <section class="mb-5">
+        <h2 class="mb-4">Shop by Category</h2>
+        <div class="row">
+            <div class="col-md-3 col-sm-6 mb-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">Men's Clothing</h5>
+                        <p class="card-text">Discover our collection of men's fashion</p>
+                        <a href="/Products?category=men" class="btn btn-primary">Shop Now</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">Women's Clothing</h5>
+                        <p class="card-text">Elegant women's fashion collection</p>
+                        <a href="/Products?category=women" class="btn btn-primary">Shop Now</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">Accessories</h5>
+                        <p class="card-text">Complete your look with accessories</p>
+                        <a href="/Products?category=accessories" class="btn btn-primary">Shop Now</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">Sale</h5>
+                        <p class="card-text">Great deals on selected items</p>
+                        <a href="/Products?category=sale" class="btn btn-danger">Sale Items</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quick Actions -->
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        <section class="mb-5">
+            <h2 class="mb-4">Quick Actions</h2>
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">My Cart</h5>
+                            <p class="card-text">View and manage your shopping cart</p>
+                            <a href="/Cart" class="btn btn-primary">My Cart</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">My Orders</h5>
+                            <p class="card-text">Track your order history</p>
+                            <a href="/Order/History" class="btn btn-primary">My Orders</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Account</h5>
+                            <p class="card-text">Manage your account settings</p>
+                            <a href="/Account/Manage" class="btn btn-primary">My Account</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    }
+</div>
